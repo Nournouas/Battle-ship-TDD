@@ -1,5 +1,5 @@
 {
-  "name": "jest-practice-1",
+  "name": "battle-ship-tdd",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
