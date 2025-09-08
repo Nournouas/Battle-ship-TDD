@@ -31,5 +31,12 @@ test("Gameboard exists", () => {
 test("Gameboard has a coordinate system", () => {
     const gameBoard = new Gameboard();
 
-    expect(gameBoard.coordinates[0][0]).toBe(0);
+    expect(gameBoard.coordinates[0][0].valid.toBeFalsy());
 });
+
+test("Gameboard keeps track of the hit and ship of each block", () => {
+    const gameBoard = new Gameboard();
+
+    expect(gameBoard.coordinates[0][0].hit.toBeFalsy());
+    expect(gameBoard.coordinates[0][0].ship.toBeNull());
+})

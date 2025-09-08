@@ -22,29 +22,42 @@ export class Ship{
 
 export class Gameboard {
     constructor(){
-        this.coordinates = Array.from(Array(10), () =>{
-            Array.fron(Array(10), () => ({
+        this.coordinates = Array.from(Array(10), () =>
+            Array.from(Array(10), () => ({
                 valid: true,
                 hit: false,
-                ship: null,
+                ship: null
             }))
-        })
+        );
     }
 
     placeShip(ship, coordsList){
         for (let [x , y] of coordsList){
             this.coordinates[x][y].valid = false;
             this.coordinates[x][y].ship = ship;
+            this.invalidateAroundCoord([x, y]);
         }
     }
 
     invalidateAroundCoord([x, y]){
         //[2,2] for example
         let directions = [
-            [-1, -1], [-1, 0], [-1, +1],
-            [0, -1], [0, 0], [0, +1],
-            [1, -1], [1, 0], [1, +1]
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1], [0, 1],
+            [1, -1],  [1, 0],  [1, 1]
         ]
+
+        for (let [dx, dy] of directions){
+            const nx = dx + x;
+            const ny = dy + y;
+            if (this.inBounds(nx, ny)){
+                this.coordinates[nx][ny].valid = false;
+            } 
+        }
+    }
+
+    inBounds(x, y){
+        return x >= 0 && y >= 0 && x < 10 && y < 10
     }
 }
 
