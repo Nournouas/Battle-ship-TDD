@@ -7,7 +7,7 @@ export class Gameboard {
             Array.from(Array(10), () => ({
                 valid: true,
                 hit: false,
-                ship: null
+                ship: false
             }))
         );
         this.sailingShips = 0;
@@ -25,7 +25,7 @@ export class Gameboard {
 
     receiveAttack([x ,y]){
         let coordinate = this.coordinates[x][y];
-        if (coordinate.ship !== null){
+        if (coordinate.ship !== false){
             coordinate.ship.hit();
             coordinate.hit = true; //Update UI
             if (coordinate.ship.sunk === true){

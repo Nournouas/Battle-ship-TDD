@@ -53,3 +53,67 @@ export function createControls(){
 
     return div;
 }
+
+export function addBlockEventListener(player, func) {
+    const board = document.getElementById(player.name);
+    if (!board) return;
+
+    board.addEventListener("click", (event) => {
+        const block = event.target.closest(".block"); 
+        if (block && board.contains(block)) {
+            func(block, player);
+        }
+    });
+}
+
+export function showArenas(){
+    const arena = document.querySelector(".arena-div");
+    arena.classList.remove("hidden");
+}
+
+export function initUI(){
+    const header = createHeader();
+    const arena = createArena();
+    arena.classList.add("hidden")
+    const controls = createControls();
+
+    document.body.appendChild(header);
+    document.body.appendChild(arena);
+    document.body.appendChild(controls);
+
+    const playBtn = document.querySelector(".play-button");
+    playBtn.addEventListener("click",() => showArenas());
+}
+
+export function updateArenaUI(player, boardID){
+    let arenaUI = document.querySelector(boardID);
+    let blocks = arenaUI.childNodes;
+    let playerBoard = player.gameBoard.coordinates;
+
+    blocks.forEach((block) =>{
+        let id = block.getAttribute("id");
+
+        id = id.split(",").map((item) => {
+            return parseInt(item, 10);
+        })
+
+        let x = id[0];
+        let y = id[1];
+
+        if(playerBoard[x][y].hit != false && playerBoard[x][y].ship != false){
+            block.classList.add("ship");
+            block.classList.add("hit");
+        }else if (playerBoard[x][y].hit != false){
+            block.textContent = "X";
+        }else if (playerBoard[x][y].ship != false){
+            block.classList.add("ship");
+        }
+    })
+
+}
+
+export function setBoardNames(player1, player2){
+        let arenas = document.querySelectorAll(".battleground-div");
+        arenas[0].setAttribute("id", player1.name);
+        arenas[1].setAttribute("id", player2.name);
+    }
