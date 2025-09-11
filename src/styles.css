@@ -93,6 +93,6 @@ header{
 
 .block:hover{
     cursor: pointer;
-    background-color: gainsboro;
+    background: rgb(67, 133, 139);
 }
 
