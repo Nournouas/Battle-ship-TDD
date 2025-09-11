@@ -62,7 +62,7 @@ header{
 }
 
 .battleground-div{
-    background-color: rgb(243, 246, 247);
+    background-color: rgb(255, 255, 255);
     width: 35vw;
     height: 35vw;
     display: grid;
@@ -70,13 +70,23 @@ header{
     grid-template-rows: repeat(10, 1fr);
     max-width: max(400px, 25vw);
     max-height: max(400px, 25vw);
+    color: rgb(142, 142, 142);
 }
+
+.battleground-div.focus{
+    background-color: rgb(245, 245, 237);
+    border: 3px solid rgb(102, 102, 102);
+    transition: ease-in 200ms;
+    color:rgb(67, 133, 139)
+}
+
+
 .destroyed{
-    background-color: blue !important;
+    background-color: rgb(66, 12, 12) !important;
 }
 
 .block{
-    border: 1px solid rgb(139, 137, 137);
+    border: 1px solid rgb(141, 141, 141);
     width: 100%;
     display: flex;
     justify-content: center;
@@ -88,7 +98,7 @@ header{
 }
 
 .block.hit.ship{
-    background-color: rgb(152, 28, 28);
+    background-color: rgb(190, 125, 26);
 }
 
 .block:hover{

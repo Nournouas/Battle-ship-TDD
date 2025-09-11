@@ -22,14 +22,14 @@ function inBounds(x, y){
 }
 
 //generates a random coordinate between 0 - 9 for example [1, 2] or [5,3]
-function getRandomCoords(){
+export function getRandomCoords(){
     let randCoordsX = Math.floor(Math.random() * 10);
     let randCoordsY = Math.floor(Math.random() * 10);
     return [randCoordsX, randCoordsY];
 }
 
 //randomly position the ships of a given player
-export function randomlyPositionShips(player){
+function randomlyPositionShips(player){
     let numberOfShips = player.ships.length;
     let arena = player.gameBoard.coordinates;
 
@@ -100,26 +100,10 @@ function shuffleArray(array) {
   }
 }
 
-//This function waits for a user to click, the block is returned as the resolved promise
-//the block is later used to launch the behaviour desired
-export function waitForPlayerMove(player){
-    return new Promise((resolve) => {
-        const board = document.getElementById(player.name);
-
-        const listener = (event) => {
-            const block = event.target.closest(".block");
-            if (block && board.contains(block)) {
-                board.removeEventListener("click", listener);
-                resolve(block);
-            }
-        }
-
-        board.addEventListener("click", listener)
-    })
-}
 
 //attacks a block on the players board
 export function attackBlock(blockUI, player) {
+    console.log(blockUI);
     const playerBoard = player.gameBoard;
     
     // Parse coordinates from block ID
@@ -155,13 +139,13 @@ export async function gameLoop(players){
     while (mainPlayer.ships.length > 0 && opponent.ships.length > 0){
 
         if (turn === players.player1){
-            let block = await waitForPlayerMove(opponent);
+            let block = await turn.waitForMove(opponent);
             attackBlock(block, opponent);
             turn = opponent;
 
         }else if (turn === players.player2){
-            let block = await waitForPlayerMove(mainPlayer);
-            attackBlock(block, mainPlayer);
+            console.log("hello")
+            turn.attackRandomly(mainPlayer);
             turn = mainPlayer;
         }
 
@@ -175,9 +159,6 @@ export async function gameLoop(players){
     }
 }
 
-
-
-
 //destroys blocks around a sunken ship
 function destroyAroundSunk(playerBoard, shipCoords, player){
     for (let [x, y] of shipCoords){
@@ -185,6 +166,3 @@ function destroyAroundSunk(playerBoard, shipCoords, player){
     }
     updateArenaUI(player)
 }
-
-
-

@@ -60,46 +60,6 @@ export function createControls(){
     return div;
 }
 
-export function addBlockEventListener(player, func) {
-    const enemyBoard = document.getElementById(player.name);
-    if (!enemyBoard) return;
-
-    enemyBoard.addEventListener("click", (event) => {
-        const block = event.target.closest(".block"); 
-        if (block && enemyBoard.contains(block)) {
-            func(block, player);
-        }
-    });
-    waitForClick(enemyBoard);
-}
-
-function getPromiseFromEvent(item, event) {
-  return new Promise((resolve) => {
-    const listener = () => {
-      item.removeEventListener(event, listener);
-      resolve();
-    }
-    item.addEventListener(event, listener);
-  })
-}
-
-async function waitForClick(node) {
-  await getPromiseFromEvent(node, "click")
-}
-
-export function removeBlockEventListener(player, func){
-    const enemyBoard = document.getElementById(player.name);
-    if (!enemyBoard) return;
-
-    enemyBoard.removeEventListener("click", (event) => {
-        const block = event.target.closest(".block"); 
-        if (block && enemyBoard.contains(block)) {
-            func(block, player);
-        }
-    });
-
-}
-
 export function showArenas(){
     const arena = document.querySelector(".arena-div");
     arena.classList.remove("hidden");

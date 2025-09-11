@@ -1,7 +1,7 @@
 import "./styles.css";
 import "./cssReset.css"
 import { initUI} from "./DOM";
-import { attackBlock, startGame, waitForPlayerMove, gameLoop} from "./gameSupport";
+import {startGame, gameLoop} from "./gameSupport";
 
 
 
