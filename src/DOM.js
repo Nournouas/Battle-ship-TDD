@@ -42,6 +42,12 @@ export function createArena(){
     return div;
 }
 
+export function disableArena(arena){
+    arena.childNodes.forEach((block) => {
+        block.classList.add("player");
+    });
+}
+
 export function createControls(){
     const div = createElement("div", ["controls-div"], "", {});
 
@@ -55,15 +61,43 @@ export function createControls(){
 }
 
 export function addBlockEventListener(player, func) {
-    const board = document.getElementById(player.name);
-    if (!board) return;
+    const enemyBoard = document.getElementById(player.name);
+    if (!enemyBoard) return;
 
-    board.addEventListener("click", (event) => {
+    enemyBoard.addEventListener("click", (event) => {
         const block = event.target.closest(".block"); 
-        if (block && board.contains(block)) {
+        if (block && enemyBoard.contains(block)) {
             func(block, player);
         }
     });
+    waitForClick(enemyBoard);
+}
+
+function getPromiseFromEvent(item, event) {
+  return new Promise((resolve) => {
+    const listener = () => {
+      item.removeEventListener(event, listener);
+      resolve();
+    }
+    item.addEventListener(event, listener);
+  })
+}
+
+async function waitForClick(node) {
+  await getPromiseFromEvent(node, "click")
+}
+
+export function removeBlockEventListener(player, func){
+    const enemyBoard = document.getElementById(player.name);
+    if (!enemyBoard) return;
+
+    enemyBoard.removeEventListener("click", (event) => {
+        const block = event.target.closest(".block"); 
+        if (block && enemyBoard.contains(block)) {
+            func(block, player);
+        }
+    });
+
 }
 
 export function showArenas(){
@@ -85,8 +119,8 @@ export function initUI(){
     playBtn.addEventListener("click",() => showArenas());
 }
 
-export function updateArenaUI(player, boardID){
-    let arenaUI = document.querySelector(boardID);
+export function updateArenaUI(player){
+    let arenaUI = document.querySelector(`#${player.name}`);
     let blocks = arenaUI.childNodes;
     let playerBoard = player.gameBoard.coordinates;
 
@@ -106,11 +140,12 @@ export function updateArenaUI(player, boardID){
         }else if (playerBoard[x][y].hit != false){
             block.textContent = "X";
         }else if (playerBoard[x][y].ship != false){
-            block.classList.add("ship");
+            //block.classList.add("ship");
         }
     })
 
 }
+
 
 export function setBoardNames(player1, player2){
         let arenas = document.querySelectorAll(".battleground-div");

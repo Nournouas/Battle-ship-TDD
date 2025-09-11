@@ -96,3 +96,9 @@ header{
     background: rgb(67, 133, 139);
 }
 
+.block.player:hover{
+    cursor: pointer;
+    background: rgba(67, 133, 139, 0);
+}
+
+

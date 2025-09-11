@@ -57,6 +57,22 @@ export class Gameboard {
         }
     }
 
+    destroyAroundCoord([x, y]){
+        let directions = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1], [0, 1],
+            [1, -1],  [1, 0],  [1, 1]
+        ]
+
+        for (let [dx, dy] of directions){
+            const nx = dx + x;
+            const ny = dy + y;
+            if (this.inBounds(nx, ny)){
+                this.coordinates[nx][ny].hit = true;
+            } 
+        }
+    }
+
     inBounds(x, y){
         return x >= 0 && y >= 0 && x < 10 && y < 10;
     }

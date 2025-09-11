@@ -1,6 +1,21 @@
 import { updateArenaUI, setBoardNames } from "./DOM";
 import { Player, ComputerPlayer} from "./Player";
 
+//Initialises the two player objects
+export function startGame(player1, player2){
+        let player = new Player(player1);
+        let computer = new ComputerPlayer(player2);
+        setBoardNames(player, computer);
+
+        randomlyPositionShips(player);
+        randomlyPositionShips(computer);
+        updateArenaUI(player);
+        updateArenaUI(computer);
+
+        return {player1: player, player2: computer}
+
+}
+
 //checks if the coordinate is within the bound (0 to 9)
 function inBounds(x, y){
     return x >= 0 && y >= 0 && x <= 9 && y <= 9;
@@ -13,22 +28,7 @@ function getRandomCoords(){
     return [randCoordsX, randCoordsY];
 }
 
-function visualizeBoard(board) {
-    return board
-        .map(row =>
-        row
-            .map(cell => {
-            if (cell.ship) {
-                return cell.valid ? "S" : "s";
-            }
-            return cell.valid ? "." : "x";
-            })
-            .join(" ")
-        )
-        .join("\n");
-}
-
-//this function 
+//randomly position the ships of a given player
 export function randomlyPositionShips(player){
     let numberOfShips = player.ships.length;
     let arena = player.gameBoard.coordinates;
@@ -46,6 +46,8 @@ export function randomlyPositionShips(player){
 
 }
 
+//tries to lay the ships in 4 directions based on a coordinate
+// if it cant fit the ship in any direction returns false
 function getFullShipCoords(arena, ship, originalCoord){
     let directions = [
         [0, 1],
@@ -53,6 +55,7 @@ function getFullShipCoords(arena, ship, originalCoord){
         [0, -1],
         [-1, 0]
     ]
+    shuffleArray(directions);
 
     for (let [x, y] of directions){
         let shipCoords = [];
@@ -80,6 +83,42 @@ function getFullShipCoords(arena, ship, originalCoord){
     return false
 }
 
+//shuffles an array
+function shuffleArray(array) {
+  let currentIndex = array.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+}
+
+//This function waits for a user to click, the block is returned as the resolved promise
+//the block is later used to launch the behaviour desired
+export function waitForPlayerMove(player){
+    return new Promise((resolve) => {
+        const board = document.getElementById(player.name);
+
+        const listener = (event) => {
+            const block = event.target.closest(".block");
+            if (block && board.contains(block)) {
+                board.removeEventListener("click", listener);
+                resolve(block);
+            }
+        }
+
+        board.addEventListener("click", listener)
+    })
+}
+
+//attacks a block on the players board
 export function attackBlock(blockUI, player) {
     const playerBoard = player.gameBoard;
     
@@ -100,23 +139,52 @@ export function attackBlock(blockUI, player) {
             let block = document.querySelector(`#${CSS.escape(player.name)} > #${CSS.escape(blockId)}`);
             block.classList.add("destroyed");
         }
+        destroyAroundSunk(playerBoard, playerBoard.coordinates[x][y].ship.coordinate, player)
         
     }
     // Update UI
-    updateArenaUI(player, `#${player.name}`);
+    updateArenaUI(player);
 }
 
-export function startGame(player1, player2){
-        let player = new Player(player1);
-        let computer = new ComputerPlayer(player2);
-        setBoardNames(player, computer);
+//the main game loop
+export async function gameLoop(players){
+    let mainPlayer = players.player1;
+    let opponent = players.player2;
+    let turn = mainPlayer;
 
-        randomlyPositionShips(player);
-        randomlyPositionShips(computer);
-        updateArenaUI(player, `#${player1}`);
-        updateArenaUI(computer, `#${player2}`);
+    while (mainPlayer.ships.length > 0 && opponent.ships.length > 0){
 
-        return {player1: player, player2: computer}
+        if (turn === players.player1){
+            let block = await waitForPlayerMove(opponent);
+            attackBlock(block, opponent);
+            turn = opponent;
 
+        }else if (turn === players.player2){
+            let block = await waitForPlayerMove(mainPlayer);
+            attackBlock(block, mainPlayer);
+            turn = mainPlayer;
+        }
+
+
+        if (mainPlayer.ships.length === 0){
+            console.alert(opponent.name + " wins!")
+        }else if (opponent.ships.length === 0){
+            console.alert(mainPlayer.name + " wins!")
+        }
+
+    }
 }
+
+
+
+
+//destroys blocks around a sunken ship
+function destroyAroundSunk(playerBoard, shipCoords, player){
+    for (let [x, y] of shipCoords){
+        playerBoard.destroyAroundCoord([x, y]);
+    }
+    updateArenaUI(player)
+}
+
+
 
